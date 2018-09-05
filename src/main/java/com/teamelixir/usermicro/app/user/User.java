@@ -10,7 +10,7 @@ public class User {
     private String role;
 
     public long getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(long id) {

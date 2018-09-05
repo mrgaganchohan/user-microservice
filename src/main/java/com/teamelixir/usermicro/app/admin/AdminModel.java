@@ -10,7 +10,11 @@ public class AdminModel extends User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="id")
     private long id;
+
+    @Column(name="username", unique = true)
+    private String username;
 
     @Column(name="name")
     private String name;
@@ -30,12 +34,9 @@ public class AdminModel extends User {
     @Column(name="office")
     private String office;
 
-    @Column(name="username")
-    private String username;
-
     @Override
     public long getId() {
-        return id;
+        return this.id;
     }
 
     @Override
@@ -99,10 +100,11 @@ public class AdminModel extends User {
     }
 
     public String getUsername() {
-        return username;
+        return this.username;
     }
 
-    public void setUsername() {
-        this.username = "COG_ADMIN_" + this.getId();
+    public void setUsername(String username) {
+        this.username = username;
     }
+
 }
