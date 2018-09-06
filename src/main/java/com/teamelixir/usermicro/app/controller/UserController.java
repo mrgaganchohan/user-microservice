@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
@@ -68,6 +67,17 @@ public class UserController {
         return new ResponseEntity("Deleted '" + adminUsername + "' successfully.", HttpStatus.OK);
     }
 
+
+    @RequestMapping(value = "/admin/getAllAdmins")
+    public ResponseEntity getAllAdminUsers() {
+        Iterable<AdminModel> allAdmins = adminRepository.findAll();
+
+        //May not add this in as empty array may be handled on frontend.
+//        if(!allAdmins.iterator().hasNext()){
+//            return new ResponseEntity("There are no entries in db.", HttpStatus.CONFLICT);
+//        }
+        return new ResponseEntity(allAdmins, HttpStatus.OK);
+    }
 
 
 }
