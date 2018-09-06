@@ -1,6 +1,7 @@
 package com.teamelixir.usermicro.app.admin;
 
 import com.teamelixir.usermicro.app.user.User;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 
@@ -8,11 +9,11 @@ import javax.persistence.*;
 @Table(name = "user_admin")
 public class AdminModel extends User {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="id")
     private long id;
 
+    @Id
     @Column(name="username", unique = true)
     private String username;
 
