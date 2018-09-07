@@ -40,7 +40,6 @@ public class UserController {
                 adminUser.setOffice(jsonObject.getString("office"));
 
                 AdminModel exists = adminRepository.findAdminModelByEmail(adminUser.getEmail());
-                //System.out.println("ADMIN USER !!!! ==== " + exists.toString());
 
                 if(exists != null) {
                     String email = jsonObject.getString("email");
