@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 @RestController
@@ -25,8 +24,8 @@ public class UserController {
 
 
     //Add an ADMIN to the db - username (PK) cannot be null.
-    @RequestMapping(value="/{userType}/add", produces = {"application/json"}, method = RequestMethod.POST)
-    public ResponseEntity addAdmin(@PathVariable String userType, @RequestBody String data) {
+    @PostMapping(value="/{userType}/add", produces = {"application/json"})
+    public ResponseEntity addUser(@PathVariable String userType, @RequestBody String data) {
         JSONObject jsonObject = null;
 
         if(userType.equalsIgnoreCase("admin")) {
@@ -39,13 +38,13 @@ public class UserController {
                 adminUser.setContactNum(jsonObject.getString("contactNum"));
                 adminUser.setDesignation(jsonObject.getString("designation"));
                 adminUser.setOffice(jsonObject.getString("office"));
-                adminUser.setUsername(jsonObject.getString("username").toLowerCase());
 
-                boolean exists = adminRepository.existsById(adminUser.getUsername());
+                AdminModel exists = adminRepository.findAdminModelByEmail(adminUser.getEmail());
+                //System.out.println("ADMIN USER !!!! ==== " + exists.toString());
 
-                if(exists) {
-                    String username = jsonObject.getString("username");
-                    return new ResponseEntity("Admin with username="+username +" already exists.", HttpStatus.CONFLICT);
+                if(exists != null) {
+                    String email = jsonObject.getString("email");
+                    return new ResponseEntity("Admin with email="+email +" already exists.", HttpStatus.CONFLICT);
                 }
 
                 adminRepository.save(adminUser);
@@ -63,13 +62,12 @@ public class UserController {
                 customerUser.setEmail(jsonObject.getString("email"));
                 customerUser.setRole();
                 customerUser.setContactNum(jsonObject.getString("contactNum"));
-                customerUser.setUsername(jsonObject.getString("username").toLowerCase());
 
-                boolean exists = adminRepository.existsById(customerUser.getUsername());
+                CustomerModel exists = customerRepository.findCustomerModelByEmail(customerUser.getEmail());
 
-                if(exists) {
-                    String username = jsonObject.getString("username");
-                    return new ResponseEntity("Customer with username="+username +" already exists.", HttpStatus.CONFLICT);
+                if(exists != null) {
+                    String email = jsonObject.getString("email");
+                    return new ResponseEntity("Customer with username="+email +" already exists.", HttpStatus.CONFLICT);
                 }
 
                 customerRepository.save(customerUser);
@@ -84,22 +82,22 @@ public class UserController {
     }
 
     //Check if user exists in the db, return that user - otherwise return error message.
-    @RequestMapping(value = "/{userType}/{username}")
-    public ResponseEntity findByUsername(@PathVariable String userType, @PathVariable String username) {
+    @GetMapping(value = "/{userType}/{email}")
+    public ResponseEntity findByEmail(@PathVariable String userType, @PathVariable String email) {
         if(userType.equalsIgnoreCase("admin")){
-            AdminModel adminUser = adminRepository.findAdminModelByUsername(username);
+            AdminModel adminUser = adminRepository.findAdminModelByEmail(email);
 
             if(adminUser == null){
-                return new ResponseEntity("Cannot find admin user with username '" + username + "'", HttpStatus.NOT_FOUND);
+                return new ResponseEntity("Cannot find admin user with email '" + email + "'", HttpStatus.NOT_FOUND);
             }
 
             return new ResponseEntity(adminUser, HttpStatus.FOUND);
         }
         if(userType.equalsIgnoreCase("customer")){
-            CustomerModel customerUser = customerRepository.findCustomerModelByUsername(username);
+            CustomerModel customerUser = customerRepository.findCustomerModelByEmail(email);
 
             if(customerUser == null){
-                return new ResponseEntity("Cannot find customer user with username '" + username + "'", HttpStatus.NOT_FOUND);
+                return new ResponseEntity("Cannot find customer user with email '" + email + "'", HttpStatus.NOT_FOUND);
             }
 
             return new ResponseEntity(customerUser, HttpStatus.FOUND);
@@ -108,38 +106,36 @@ public class UserController {
     }
 
     //Delete a user based on their unique username.
-    @RequestMapping(value = "/{userType}/delete/{username}")
+    @DeleteMapping(value = "/{userType}/delete/{email}")
     @Transactional
-    public ResponseEntity deleteUser(@PathVariable String userType, @PathVariable String username) {
+    public ResponseEntity deleteUser(@PathVariable String userType, @PathVariable String email) {
 
         if(userType.equalsIgnoreCase("admin")) {
-            String adminUsername = username.toLowerCase();
             //Check to see if user exists first
-            boolean exists = adminRepository.existsById(adminUsername);
+            AdminModel adminUser = adminRepository.findAdminModelByEmail(email);
 
-            if(!exists) {
-                return new ResponseEntity("'" + adminUsername + "' does not exist. Cannot delete user.", HttpStatus.NOT_FOUND);
+            if(adminUser == null) {
+                return new ResponseEntity("'" + email + "' does not exist. Cannot delete user.", HttpStatus.NOT_FOUND);
             }
 
-            adminRepository.deleteAdminModelByUsername(adminUsername);
-            return new ResponseEntity("Deleted '" + adminUsername + "' successfully.", HttpStatus.OK);
+            adminRepository.deleteAdminModelByEmail(email);
+            return new ResponseEntity("Deleted '" + email + "' successfully.", HttpStatus.OK);
         }
         if(userType.equalsIgnoreCase("customer")) {
-            String customerUsername = username.toLowerCase();
             //Check to see if user exists first
-            boolean exists = customerRepository.existsById(customerUsername);
+            CustomerModel customerUser = customerRepository.findCustomerModelByEmail(email);
 
-            if(!exists) {
-                return new ResponseEntity("'" + customerUsername + "' does not exist. Cannot delete user.", HttpStatus.NOT_FOUND);
+            if(customerUser ==  null) {
+                return new ResponseEntity("'" + email + "' does not exist. Cannot delete user.", HttpStatus.NOT_FOUND);
             }
 
-            customerRepository.deleteCustomerModelByUsername(customerUsername);
-            return new ResponseEntity("Deleted '" + customerUsername + "' successfully.", HttpStatus.OK);
+            customerRepository.deleteCustomerModelByEmail(email);
+            return new ResponseEntity("Deleted '" + email + "' successfully.", HttpStatus.OK);
         }
         return new ResponseEntity("The path requested does not exist.", HttpStatus.NOT_FOUND);
     }
 
-    @RequestMapping(value = "/{userType}/getAll")
+    @GetMapping(value = "/{userType}/getAll")
     public ResponseEntity getAll(@PathVariable String userType) {
 
         if(userType.equalsIgnoreCase("admin")) {
@@ -159,6 +155,59 @@ public class UserController {
 //            return new ResponseEntity("There are no entries in db.", HttpStatus.CONFLICT);
 //        }
             return new ResponseEntity(allCustomers, HttpStatus.OK);
+        }
+        return new ResponseEntity("The path requested does not exist.", HttpStatus.NOT_FOUND);
+    }
+
+    @PutMapping(value="/{userType}/update/{email}")
+    public ResponseEntity editUserDetails(@PathVariable String userType, @PathVariable String email, @RequestBody String data) {
+        JSONObject jsonObject = null;
+
+        if(userType.equalsIgnoreCase("admin")) {
+          try {
+              jsonObject = new JSONObject(data);
+
+              AdminModel adminUser = adminRepository.findAdminModelByEmail(email);
+
+              if(adminUser != null) {
+                  adminUser.setName(jsonObject.getString("name"));
+                  adminUser.setRole();
+                  adminUser.setContactNum(jsonObject.getString("contactNum"));
+                  adminUser.setDesignation(jsonObject.getString("designation"));
+                  adminUser.setOffice(jsonObject.getString("office"));
+
+                  adminRepository.save(adminUser);
+                  return new ResponseEntity("Updated user '" + adminUser.getEmail() + "' successfully.", HttpStatus.FOUND);
+              }
+
+              return new ResponseEntity("Cannot find user in db, so cannot update non-existent user.", HttpStatus.NOT_FOUND);
+
+          }
+          catch(Exception e) {
+              e.printStackTrace();
+          }
+        }
+
+        if(userType.equalsIgnoreCase("customer")) {
+            try {
+                jsonObject = new JSONObject(data);
+
+                CustomerModel customerUser = customerRepository.findCustomerModelByEmail(email);
+
+                if(customerUser != null) {
+                    customerUser.setName(jsonObject.getString("name"));
+                    customerUser.setRole();
+                    customerUser.setContactNum(jsonObject.getString("contactNum"));
+
+                    customerRepository.save(customerUser);
+                    return new ResponseEntity("Updated user '" + customerUser.getEmail() + "' successfully.", HttpStatus.FOUND);
+                }
+
+                return new ResponseEntity("Cannot find user in db, so cannot update non-existent user.", HttpStatus.NOT_FOUND);
+            }
+          catch(Exception e) {
+                e.printStackTrace();
+            }
         }
         return new ResponseEntity("The path requested does not exist.", HttpStatus.NOT_FOUND);
     }

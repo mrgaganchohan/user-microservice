@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface AdminRepository extends CrudRepository<AdminModel, String> {
 
-    AdminModel findAdminModelByUsername(String username);
-    void deleteAdminModelByUsername(String username);
+    AdminModel findAdminModelByEmail(String email);
+    void deleteAdminModelByEmail(String email);
 
 }

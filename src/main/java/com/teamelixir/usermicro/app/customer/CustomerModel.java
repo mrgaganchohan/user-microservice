@@ -6,18 +6,15 @@ import javax.persistence.*;
 @Table(name = "user_customer")
 public class CustomerModel extends User {
 
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="id")
     private long id;
 
-    @Id
-    @Column(name="username", unique = true)
-    private String username;
-
     @Column(name="name")
     private String name;
 
-    @Column(name="email")
+    @Column(name="email", unique = true)
     private String email;
 
     @Column(name="contactNum")
@@ -73,14 +70,6 @@ public class CustomerModel extends User {
     @Override
     public String getRole() {
         return "USER";
-    }
-
-    public String getUsername() {
-        return this.username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
 }
