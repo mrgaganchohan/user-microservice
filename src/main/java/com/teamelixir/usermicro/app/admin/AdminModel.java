@@ -1,8 +1,6 @@
 package com.teamelixir.usermicro.app.admin;
 
 import com.teamelixir.usermicro.app.user.User;
-import org.hibernate.annotations.NaturalId;
-
 import javax.persistence.*;
 
 @Entity

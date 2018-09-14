@@ -22,7 +22,6 @@ public class UserController {
     @Autowired
     private CustomerRepository customerRepository;
 
-
     //Add an ADMIN to the db - username (PK) cannot be null.
     @PostMapping(value="/{userType}/add", produces = {"application/json"})
     public ResponseEntity addUser(@PathVariable String userType, @RequestBody String data) {
