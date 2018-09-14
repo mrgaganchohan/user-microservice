@@ -9,11 +9,12 @@ pipeline {
             }
         }
 
-        stage ('Testing Stage') {
+ /*       stage ('Testing Stage') {
             steps {
                 sh 'mvn test'
             }
         }
+ */
 
         stage ('Packaging Stage') {
             steps {
