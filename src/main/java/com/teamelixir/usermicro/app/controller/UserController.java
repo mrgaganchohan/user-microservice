@@ -50,6 +50,7 @@ public class UserController {
             }
             catch(Exception e) {
                e.printStackTrace();
+               e.printStackTrace();
             }
         }
         if(userType.equalsIgnoreCase("customer")) {
@@ -89,7 +90,7 @@ public class UserController {
                 return new ResponseEntity("Cannot find admin user with email '" + email + "'", HttpStatus.NOT_FOUND);
             }
 
-            return new ResponseEntity(adminUser, HttpStatus.FOUND);
+            return new ResponseEntity(adminUser, HttpStatus.OK);
         }
         if(userType.equalsIgnoreCase("customer")){
             CustomerModel customerUser = customerRepository.findCustomerModelByEmail(email);
@@ -98,7 +99,7 @@ public class UserController {
                 return new ResponseEntity("Cannot find customer user with email '" + email + "'", HttpStatus.NOT_FOUND);
             }
 
-            return new ResponseEntity(customerUser, HttpStatus.FOUND);
+            return new ResponseEntity(customerUser, HttpStatus.OK);
         }
         return new ResponseEntity("The path requested does not exist.", HttpStatus.NOT_FOUND);
     }
@@ -175,7 +176,7 @@ public class UserController {
                   adminUser.setOffice(jsonObject.getString("office"));
 
                   adminRepository.save(adminUser);
-                  return new ResponseEntity("Updated user '" + adminUser.getEmail() + "' successfully.", HttpStatus.FOUND);
+                  return new ResponseEntity("Updated user '" + adminUser.getEmail() + "' successfully.", HttpStatus.OK);
               }
 
               return new ResponseEntity("Cannot find user in db, so cannot update non-existent user.", HttpStatus.NOT_FOUND);
@@ -198,7 +199,7 @@ public class UserController {
                     customerUser.setContactNum(jsonObject.getString("contactNum"));
 
                     customerRepository.save(customerUser);
-                    return new ResponseEntity("Updated user '" + customerUser.getEmail() + "' successfully.", HttpStatus.FOUND);
+                    return new ResponseEntity("Updated user '" + customerUser.getEmail() + "' successfully.", HttpStatus.OK);
                 }
 
                 return new ResponseEntity("Cannot find user in db, so cannot update non-existent user.", HttpStatus.NOT_FOUND);
