@@ -4,6 +4,7 @@ import com.teamelixir.usermicro.app.admin.AdminModel;
 import com.teamelixir.usermicro.app.customer.CustomerModel;
 import com.teamelixir.usermicro.app.repository.AdminRepository;
 import com.teamelixir.usermicro.app.repository.CustomerRepository;
+import org.apache.commons.lang.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -169,7 +170,7 @@ public class UserController {
               AdminModel adminUser = adminRepository.findAdminModelByEmail(email);
 
               if(adminUser != null) {
-                  adminUser.setName(jsonObject.getString("name"));
+                  adminUser.setName(WordUtils.capitalizeFully(jsonObject.getString("name")));
                   adminUser.setRole();
                   adminUser.setContactNum(jsonObject.getString("contactNum"));
                   adminUser.setDesignation(jsonObject.getString("designation"));
@@ -199,7 +200,7 @@ public class UserController {
                     customerUser.setContactNum(jsonObject.getString("contactNum"));
 
                     customerRepository.save(customerUser);
-                    return new ResponseEntity("Updated user '" + customerUser.getEmail() + "' successfully.", HttpStatus.OK);
+                    return new ResponseEntity(customerUser, HttpStatus.OK);
                 }
 
                 return new ResponseEntity("Cannot find user in db, so cannot update non-existent user.", HttpStatus.NOT_FOUND);
