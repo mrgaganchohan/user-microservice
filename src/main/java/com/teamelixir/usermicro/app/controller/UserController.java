@@ -176,7 +176,7 @@ public class UserController {
                   adminUser.setOffice(jsonObject.getString("office"));
 
                   adminRepository.save(adminUser);
-                  return new ResponseEntity("Updated user '" + adminUser.getEmail() + "' successfully.", HttpStatus.OK);
+                  return new ResponseEntity(adminUser, HttpStatus.OK);
               }
 
               return new ResponseEntity("Cannot find user in db, so cannot update non-existent user.", HttpStatus.NOT_FOUND);
