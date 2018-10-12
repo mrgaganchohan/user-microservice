@@ -62,6 +62,7 @@ public class UserController {
                 customerUser.setEmail(jsonObject.getString("email"));
                 customerUser.setRole();
                 customerUser.setContactNum(jsonObject.getString("contactNum"));
+                customerUser.setAddress(jsonObject.getString("address"));
 
                 CustomerModel exists = customerRepository.findCustomerModelByEmail(customerUser.getEmail());
 
@@ -198,6 +199,7 @@ public class UserController {
                     customerUser.setName(jsonObject.getString("name"));
                     customerUser.setRole();
                     customerUser.setContactNum(jsonObject.getString("contactNum"));
+                    customerUser.setAddress(jsonObject.getString("address"));
 
                     customerRepository.save(customerUser);
                     return new ResponseEntity(customerUser, HttpStatus.OK);

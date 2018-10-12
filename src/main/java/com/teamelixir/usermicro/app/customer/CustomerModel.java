@@ -20,6 +20,9 @@ public class CustomerModel extends User {
     @Column(name="contactNum")
     private String contactNum;
 
+    @Column(name="address")
+    private String address;
+
     @Column(name="role")
     private String role;
 
@@ -61,6 +64,14 @@ public class CustomerModel extends User {
     @Override
     public void setContactNum(String contactNum) {
         this.contactNum = contactNum;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public void setRole() {
